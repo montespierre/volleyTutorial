@@ -2,13 +2,16 @@ package com.weimont.volleytutorial;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
@@ -20,10 +23,12 @@ import org.json.JSONObject;
 
 public class MainActivityDos extends AppCompatActivity {
 
-    TextView vTextview;
-    RequestQueue requestQueue;
 
-    private static final String URL3 = "https://my-json-server.typicode.com/typicode/demo/db";
+    RequestQueue requestQueue;
+    ImageView imageView;
+
+
+    private static final String URL4 = "https://depor.com/resizer/btHIkiAyuYW7tloVn_tbUiiKHJY=/580x330/smart/filters:format(jpeg):quality(75)/arc-anglerfish-arc2-prod-elcomercio.s3.amazonaws.com/public/I7MKT5366JBOPH7TQUB3GBIG6Y.jpg";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,64 +42,46 @@ public class MainActivityDos extends AppCompatActivity {
 
         //stringRequest();
         //jsonArrayRequest();
-        jsonObjectRequest();
+        //jsonObjectRequest();
+        imageRequest();
 
 
     }
 
     private void initUI() {
-        vTextview = findViewById(R.id.textView);
+        imageView = findViewById(R.id.imageView);
     }
 
-
-
-
-
-    private void jsonObjectRequest(){
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
-                Request.Method.GET,
-                URL3,
-                null,
-                new Response.Listener<JSONObject>() {
+    private void imageRequest(){
+        ImageRequest imageRequest = new ImageRequest(
+                URL4,
+                new Response.Listener<Bitmap>() {
                     @Override
-                    public void onResponse(JSONObject response) {
-                        JSONArray jsonArray = null;
-                        try {
-                            jsonArray = response.getJSONArray("posts");
-                            int size = jsonArray.length();
-
-                            for(int i = 0; i < size; i++){
-                                JSONObject jsonObject = new JSONObject(jsonArray.get(i).toString());
-                                String title = jsonObject.getString("title");
-
-                                vTextview.append("Title: " + title + "\n");
-
-
-
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-
-
-
+                    public void onResponse(Bitmap response) {
+                        imageView.setImageBitmap(response);
 
                     }
                 },
+                0,
+                0,
+                null,
+                null,
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+
 
                     }
                 }
 
 
         );
+        requestQueue.add(imageRequest);
+    }
 
-        requestQueue.add(jsonObjectRequest);
 
 
-        }
+
+
+
     }
