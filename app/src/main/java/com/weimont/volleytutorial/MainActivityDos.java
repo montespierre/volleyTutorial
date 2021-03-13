@@ -10,6 +10,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -21,8 +22,8 @@ public class MainActivityDos extends AppCompatActivity {
 
     TextView vTextview;
     RequestQueue requestQueue;
-    private static final String URL1 = "https://my-json-server.typicode.com/typicode/demo/comments";
-    private static final String URL2 = "https://my-json-server.typicode.com/typicode/demo/posts";
+
+    private static final String URL3 = "https://my-json-server.typicode.com/typicode/demo/db";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +36,8 @@ public class MainActivityDos extends AppCompatActivity {
         initUI();
 
         //stringRequest();
-        jsonArrayRequest();
+        //jsonArrayRequest();
+        jsonObjectRequest();
 
 
     }
@@ -44,55 +46,40 @@ public class MainActivityDos extends AppCompatActivity {
         vTextview = findViewById(R.id.textView);
     }
 
-    private void stringRequest(){
-        StringRequest request = new StringRequest(
+
+
+
+
+    private void jsonObjectRequest(){
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.GET,
-                URL1,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        vTextview.setText(response);
-
-                    }
-                },
-                new Response.ErrorListener(){
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                    }
-                }
-
-
-        );
-        requestQueue.add(request);
-    }
-
-    private void jsonArrayRequest(){
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
-                Request.Method.GET,
-                URL2,
+                URL3,
                 null,
-                new Response.Listener<JSONArray>() {
+                new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(JSONArray response) {
-                        int size = response.length();
+                    public void onResponse(JSONObject response) {
+                        JSONArray jsonArray = null;
+                        try {
+                            jsonArray = response.getJSONArray("posts");
+                            int size = jsonArray.length();
 
-                        vTextview.setText("");
-                        
-                        for(int i = 0; i<size; i++){
-
-                            try {
-                                JSONObject jsonObject = new JSONObject(response.get(i).toString());
+                            for(int i = 0; i < size; i++){
+                                JSONObject jsonObject = new JSONObject(jsonArray.get(i).toString());
                                 String title = jsonObject.getString("title");
+
                                 vTextview.append("Title: " + title + "\n");
-                            }catch (JSONException e){
-                                e.printStackTrace();
+
+
+
                             }
 
-
-
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
+
+
+
+
 
                     }
                 },
@@ -102,7 +89,12 @@ public class MainActivityDos extends AppCompatActivity {
 
                     }
                 }
+
+
         );
-        requestQueue.add(jsonArrayRequest);
+
+        requestQueue.add(jsonObjectRequest);
+
+
+        }
     }
-}
